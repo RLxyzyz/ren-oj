@@ -139,20 +139,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         if (CollectionUtils.isEmpty(questionList)) {
             return questionVOPage;
         }
-        // 1. 关联查询用户信息
-        Set<Long> userIdSet = questionList.stream().map(Question::getUserId).collect(Collectors.toSet());
-        Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
-                .collect(Collectors.groupingBy(User::getId));
-        List<QuestionVO> questionVOList = questionList.stream().map(question -> {
+        List<QuestionVO> questionVOList=new ArrayList<>();
+        for (Question question : questionList) {
+            System.out.println(question.getJudgeCase());
             QuestionVO questionVO = QuestionVO.objToVo(question);
-            Long userId = question.getUserId();
-            User user = null;
-            if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
-            }
-            questionVO.setUserVO(userService.getUserVO(user));
-            return questionVO;
-        }).collect(Collectors.toList());
+            questionVOList.add(questionVO);
+            System.out.println(questionVO.getJudgeCase());
+        }
         questionVOPage.setRecords(questionVOList);
         return questionVOPage;
     }

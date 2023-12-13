@@ -18,7 +18,7 @@ public class QuestionSubmit implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -44,7 +44,7 @@ public class QuestionSubmit implements Serializable {
     /**
      * 判题信息(json 对象)
      */
-    private String jadgeInfo;
+    private String judgeInfo;
 
     /**
      * 判题状态

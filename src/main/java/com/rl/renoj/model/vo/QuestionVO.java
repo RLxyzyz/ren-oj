@@ -1,6 +1,7 @@
 package com.rl.renoj.model.vo;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.reflect.TypeToken;
+import com.rl.renoj.model.dto.question.JudgeCase;
 import com.rl.renoj.model.dto.question.JudgeConfig;
 import com.rl.renoj.model.entity.Post;
 import com.rl.renoj.model.entity.Question;
@@ -8,6 +9,7 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +55,10 @@ public class QuestionVO implements Serializable {
      * 判题配置(json 对象)
      */
     private JudgeConfig judgeConfig;
+    /**
+     * 示例(json 对象)
+     */
+    private String judgeCase;
 
     /**
      * 点赞数
@@ -68,6 +74,10 @@ public class QuestionVO implements Serializable {
      * 创建用户 id
      */
     private Long userId;
+    /**
+     * 创建用户 id
+     */
+    private String answer;
 
     /**
      * 创建时间
@@ -100,9 +110,14 @@ public class QuestionVO implements Serializable {
             question.setTags(JSONUtil.toJsonStr(tagList));
         }
         JudgeConfig judgeConfig = questionVO.getJudgeConfig();
+        String judgeCase = questionVO.getJudgeCase();
         if (judgeConfig!=null)
         {
             question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
+        }
+        if (judgeCase!=null)
+        {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
         return question;
     }
@@ -122,6 +137,8 @@ public class QuestionVO implements Serializable {
         List<String> tagList = JSONUtil.toList(question.getTags(), String.class);
         String judgeConfigStr = question.getJudgeConfig();
         questionVO.setJudgeConfig(JSONUtil.toBean(judgeConfigStr, JudgeConfig.class));
+        String judgeCase1 = question.getJudgeCase();
+        questionVO.setJudgeCase(judgeCase1);
         questionVO.setTags(tagList);
         return questionVO;
     }

@@ -68,7 +68,7 @@ create table if not exists question_submit
     userId     bigint                             not null comment '用户 id',
     language varchar(128) not null comment '编程语言',
     code text not null comment '代码',
-    jadgeInfo text null comment '判题信息(json 对象)',
+    judgeInfo text null comment '判题信息(json 对象)',
     status int default 0 comment '判题状态',
     createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
