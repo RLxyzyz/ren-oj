@@ -1,6 +1,5 @@
 package com.rl.renoj.judge.codesandbox.model;
 
-import com.rl.renoj.model.dto.questionsubmit.JudgeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.rl.renoj.judge.strategy;
 
-import com.rl.renoj.model.dto.questionsubmit.JudgeInfo;
+import com.rl.renoj.judge.codesandbox.model.JudgeInfo;
 
 /**
  * @author 任磊

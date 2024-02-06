@@ -12,6 +12,7 @@ import com.rl.renoj.model.entity.User;
 import com.rl.renoj.model.enums.UserRoleEnum;
 import com.rl.renoj.model.vo.LoginUserVO;
 import com.rl.renoj.model.vo.UserVO;
+import com.rl.renoj.utils.JwtTokenProvider;
 import com.rl.renoj.utils.SqlUtils;
 import com.rl.renoj.constant.CommonConstant;
 import com.rl.renoj.exception.BusinessException;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +85,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request,
+                                 HttpServletResponse response) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -105,9 +109,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             log.info("user login failed, userAccount cannot match userPassword");
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
+        Long userId = user.getId();
         // 3. 记录用户的登录态
+        JwtTokenProvider jwtTokenProvider=new JwtTokenProvider();
+        String token = jwtTokenProvider.generateToken(userId);
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
-        return this.getLoginUserVO(user);
+        LoginUserVO loginUserVO = this.getLoginUserVO(user);
+        loginUserVO.setToken(token);
+        return loginUserVO;
     }
 
     @Override

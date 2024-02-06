@@ -1,7 +1,9 @@
 package com.rl.renoj.judge.strategy;
 
-import com.rl.renoj.model.dto.questionsubmit.JudgeInfo;
+import com.rl.renoj.model.dto.question.JudgeCase;
+import com.rl.renoj.judge.codesandbox.model.JudgeInfo;
 import com.rl.renoj.model.entity.Question;
+import com.rl.renoj.model.entity.QuestionSubmit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,4 +28,7 @@ public class JudgeContext {
     private List<String> outputList;
 
     private Question question;
+
+    private List<JudgeCase> judgeCaseList;
+    private QuestionSubmit questionSubmit;
 }

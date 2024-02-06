@@ -3,7 +3,7 @@ package com.rl.renoj.judge.codesandbox.impl;
 import com.rl.renoj.judge.codesandbox.CodeSandbox;
 import com.rl.renoj.judge.codesandbox.model.ExecuteCodeRequest;
 import com.rl.renoj.judge.codesandbox.model.ExecuteCodeResponse;
-import com.rl.renoj.model.dto.questionsubmit.JudgeInfo;
+import com.rl.renoj.judge.codesandbox.model.JudgeInfo;
 import com.rl.renoj.model.enums.JudgeInfoMessageEnum;
 import com.rl.renoj.model.enums.QuestionSubmitStatusEnum;
 

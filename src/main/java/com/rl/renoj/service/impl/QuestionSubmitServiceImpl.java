@@ -1,17 +1,21 @@
 package com.rl.renoj.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rl.renoj.common.ErrorCode;
 import com.rl.renoj.constant.CommonConstant;
 import com.rl.renoj.exception.BusinessException;
+import com.rl.renoj.judge.JudgeService;
+import com.rl.renoj.judge.codesandbox.model.JudgeInfo;
 import com.rl.renoj.model.dto.question.QuestionQueryRequest;
 import com.rl.renoj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.rl.renoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.rl.renoj.model.entity.*;
 import com.rl.renoj.model.enums.QuestionSubmitLanguageEnum;
 import com.rl.renoj.model.enums.QuestionSubmitStatusEnum;
+import com.rl.renoj.model.vo.QuestionSubmitListVO;
 import com.rl.renoj.model.vo.QuestionSubmitVO;
 import com.rl.renoj.model.vo.QuestionVO;
 import com.rl.renoj.model.vo.UserVO;
@@ -23,14 +27,14 @@ import com.rl.renoj.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +49,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     private QuestionService questionService;
     @Resource
     private UserService userService;
+    @Resource
+    @Lazy
+    private JudgeService judgeService;
 
     /**
      * 点赞
@@ -67,7 +74,6 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        // 是否已点赞
         long userId = loginUser.getId();
         QuestionSubmit questionSubmit = new QuestionSubmit();
         questionSubmit.setUserId(userId);
@@ -80,6 +86,10 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"题目提交失败");
         }
+        //异步执行判题服务
+        CompletableFuture.runAsync(()->{
+            QuestionSubmit questionSubmit1 = judgeService.doSubmit(questionSubmit.getId());
+        });
         return questionSubmit.getId();
     }
 
@@ -129,13 +139,39 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     }
 
     @Override
-    public Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser) {
+    public Page<QuestionSubmitListVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser) {
         List<QuestionSubmit> questionSubmitList = questionSubmitPage.getRecords();
-        Page<QuestionSubmitVO> questionSubmitVOPage = new Page<>(questionSubmitPage.getCurrent(), questionSubmitPage.getSize(), questionSubmitPage.getTotal());
+        Page<QuestionSubmitListVO> questionSubmitVOPage = new Page<>(questionSubmitPage.getCurrent(), questionSubmitPage.getSize(), questionSubmitPage.getTotal());
         if (CollectionUtils.isEmpty(questionSubmitList)) {
             return questionSubmitVOPage;
         }
-        List<QuestionSubmitVO> questionSubmitVOList = questionSubmitList.stream().map(questionSubmit -> getQuestionSubmitVO(questionSubmit, loginUser)).collect(Collectors.toList());
+        List<QuestionSubmitListVO> questionSubmitVOList=new ArrayList<>();
+        for (QuestionSubmit questionSubmit : questionSubmitList) {
+            QuestionSubmitListVO questionSubmitListVO = new QuestionSubmitListVO();
+            Long questionId = questionSubmit.getQuestionId();
+            Question question = questionService.getById(questionId);
+            Long userId = questionSubmit.getUserId();
+            User user = userService.getById(userId);
+            String judgeInfoStr = questionSubmit.getJudgeInfo();
+            JudgeInfo judgeInfo = JSONUtil.toBean(judgeInfoStr, JudgeInfo.class);
+            Long memory = judgeInfo.getMemory();
+            Long time = judgeInfo.getTime();
+            String result = judgeInfo.getMessage();
+            Date createTime = questionSubmit.getCreateTime();
+            //==========================================
+            questionSubmitListVO.setQuestionName(question.getTitle());
+            questionSubmitListVO.setSubmitTime(createTime);
+            questionSubmitListVO.setMemory(memory);
+            questionSubmitListVO.setTime(time);
+            questionSubmitListVO.setResult(result);
+            questionSubmitListVO.setLanguage(questionSubmit.getLanguage());
+            questionSubmitListVO.setQuestionId(questionId);
+            questionSubmitListVO.setUserName(user.getUserName());
+            questionSubmitListVO.setId(questionSubmit.getId());
+
+            questionSubmitVOList.add(questionSubmitListVO);
+        }
+        //List<QuestionSubmitVO> questionSubmitVOList = questionSubmitList.stream().map(questionSubmit -> getQuestionSubmitVO(questionSubmit, loginUser)).collect(Collectors.toList());
 
         questionSubmitVOPage.setRecords(questionSubmitVOList);
         return questionSubmitVOPage;

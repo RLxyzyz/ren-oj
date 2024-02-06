@@ -1,7 +1,7 @@
 package com.rl.renoj.model.vo;
 import cn.hutool.json.JSONUtil;
 
-import com.rl.renoj.model.dto.questionsubmit.JudgeInfo;
+import com.rl.renoj.judge.codesandbox.model.JudgeInfo;
 
 import com.rl.renoj.model.entity.QuestionSubmit;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.rl.renoj.judge;
 
+import com.rl.renoj.model.entity.QuestionSubmit;
 import com.rl.renoj.model.vo.QuestionSubmitVO;
 import com.rl.renoj.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,5 +15,5 @@ import javax.annotation.Resource;
  * @date 2023/12/12 22:40:08
  */
 public interface JudgeService {
-    QuestionSubmitVO doSubmit(long questionSubmitId);
+    QuestionSubmit doSubmit(long questionSubmitId);
 }

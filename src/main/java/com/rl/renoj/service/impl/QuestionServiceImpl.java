@@ -141,7 +141,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         }
         List<QuestionVO> questionVOList=new ArrayList<>();
         for (Question question : questionList) {
-            System.out.println(question.getJudgeCase());
             QuestionVO questionVO = QuestionVO.objToVo(question);
             questionVOList.add(questionVO);
             System.out.println(questionVO.getJudgeCase());

@@ -1,4 +1,4 @@
-package com.rl.renoj.model.dto.questionsubmit;
+package com.rl.renoj.judge.codesandbox.model;
 
 import lombok.Data;
 

@@ -9,6 +9,7 @@ import com.rl.renoj.model.entity.Question;
 import com.rl.renoj.model.entity.QuestionSubmit;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rl.renoj.model.entity.User;
+import com.rl.renoj.model.vo.QuestionSubmitListVO;
 import com.rl.renoj.model.vo.QuestionSubmitVO;
 import com.rl.renoj.model.vo.QuestionVO;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +52,5 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
      * @param request
      * @return Page<QuestionVO
      * */
-    Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage,User loginUser);
+    Page<QuestionSubmitListVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser);
 }
